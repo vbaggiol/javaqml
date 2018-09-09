@@ -36,7 +36,6 @@ class DOtherSideJNI {
     public static native void qvariant_setQObject(long self, long value);
     public static native boolean qvariant_isNull(long self);
     public static native void qvariant_delete(long self);
-    public static native void qvariant_assign(long self, long other);
     public static native int qvariant_toInt(long self);
     public static native boolean qvariant_toBool(long self);
     public static native String qvariant_toString(long self);

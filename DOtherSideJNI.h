@@ -241,14 +241,6 @@ JNIEXPORT void JNICALL Java_DOtherSideJNI_qvariant_1delete
 
 /*
  * Class:     DOtherSideJNI
- * Method:    qvariant_assign
- * Signature: (JJ)V
- */
-JNIEXPORT void JNICALL Java_DOtherSideJNI_qvariant_1assign
-  (JNIEnv *, jclass, jlong, jlong);
-
-/*
- * Class:     DOtherSideJNI
  * Method:    qvariant_toInt
  * Signature: (J)I
  */
