@@ -14,7 +14,7 @@ class DOtherSideJNI {
     public static native long qqmlapplicationengine_rootContext(long self);
     public static native void qqmlapplicationengine_delete(long self);
 
-    public static native void qmlcontext_setContextProperty(long self, String name, long value);
+    public static native void qqmlcontext_setContextProperty(long self, String name, long qvariantValue);
 
     public static native long qurl_create(String url, int parsingMode);
     public static native boolean qurl_isValid(long self);

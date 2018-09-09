@@ -81,10 +81,10 @@ JNIEXPORT void JNICALL Java_DOtherSideJNI_qqmlapplicationengine_1delete
 
 /*
  * Class:     DOtherSideJNI
- * Method:    qmlcontext_setContextProperty
+ * Method:    qqmlcontext_setContextProperty
  * Signature: (JLjava/lang/String;J)V
  */
-JNIEXPORT void JNICALL Java_DOtherSideJNI_qmlcontext_1setContextProperty
+JNIEXPORT void JNICALL Java_DOtherSideJNI_qqmlcontext_1setContextProperty
   (JNIEnv *, jclass, jlong, jstring, jlong);
 
 /*

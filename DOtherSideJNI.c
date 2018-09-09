@@ -49,7 +49,7 @@ void Java_DOtherSideJNI_qqmlapplicationengine_1delete(JNIEnv *env, jclass t, jlo
   dos_qqmlapplicationengine_delete((void*)self);
 }
 
-void Java_DOtherSideJNI_qmlcontext_1setContextProperty(JNIEnv *env, jclass t, jlong self, jstring name, jlong value)
+void Java_DOtherSideJNI_qqmlcontext_1setContextProperty(JNIEnv *env, jclass t, jlong self, jstring name, jlong value)
 {
   const char *c_name = (*env)->GetStringUTFChars(env, name, 0);
   dos_qqmlcontext_setcontextproperty((void*)self, c_name, (DosQVariant*)value);
