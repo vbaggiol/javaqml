@@ -287,6 +287,22 @@ JNIEXPORT jdouble JNICALL Java_DOtherSideJNI_qvariant_1toDouble
 JNIEXPORT jlong JNICALL Java_DOtherSideJNI_qvariant_1toQObject
   (JNIEnv *, jclass, jlong);
 
+/*
+ * Class:     DOtherSideJNI
+ * Method:    qmetaobject_create
+ * Signature: (JLjava/lang/String;[LDOtherSideJNI/SignalDefinition;[LDOtherSideJNI/SlotDefinition;[LDOtherSideJNI/PropertyDefinition;)J
+ */
+JNIEXPORT jlong JNICALL Java_DOtherSideJNI_qmetaobject_1create
+  (JNIEnv *, jclass, jlong, jstring, jobjectArray, jobjectArray, jobjectArray);
+
+/*
+ * Class:     DOtherSideJNI
+ * Method:    qmetaobject_delete
+ * Signature: (J)V
+ */
+JNIEXPORT void JNICALL Java_DOtherSideJNI_qmetaobject_1delete
+  (JNIEnv *, jclass, jlong);
+
 #ifdef __cplusplus
 }
 #endif

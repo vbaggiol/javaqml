@@ -42,4 +42,32 @@ class DOtherSideJNI {
     public static native float qvariant_toFloat(long self);
     public static native double qvariant_toDouble(long self);
     public static native long qvariant_toQObject(long self);
+
+    public class ParameterDefinition {
+        public String name;
+        public int metaType;
+    };
+
+    public class SignalDefinition {
+        public String name;
+        public ParameterDefinition[] parameters;
+    };
+
+    public class SlotDefinition {
+        public String name;
+        public int returnMetaType;
+        public ParameterDefinition[] parameters;
+    };
+
+    public class PropertyDefinition {
+        public String name;
+        public int metaType;
+        public String readSlot;
+        public String writeSlot;
+        public String notifySignal;
+    };
+
+    public static native long qmetaobject_create(long parentQMetaObject, String className, SignalDefinition[] signals, SlotDefinition[] slots, PropertyDefinition[] properties);
+
+    public static native void qmetaobject_delete(long self);
 }
