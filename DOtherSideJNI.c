@@ -197,7 +197,7 @@ void JNICALL Java_DOtherSideJNI_qmetaobject_1delete(JNIEnv *env, jclass t, jlong
     dos_qmetaobject_delete((DosQMetaObject*)self);
 }
 
-ParameterDefinition* to_parameter_definition(JNIEnv* env, jobjectArray array) {
+static ParameterDefinition* to_parameter_definition(JNIEnv* env, jobjectArray array) {
     jsize count = (*env)->GetArrayLength(env, array);
     ParameterDefinition* result = (ParameterDefinition*) malloc((uint)count * sizeof(ParameterDefinition));
     for (jsize i = 0; i < count; ++i) {
@@ -215,7 +215,7 @@ ParameterDefinition* to_parameter_definition(JNIEnv* env, jobjectArray array) {
     return result;
 }
 
-void free_parameter_definition(JNIEnv* env, jobjectArray array, ParameterDefinition* parameters) {
+static void free_parameter_definition(JNIEnv* env, jobjectArray array, ParameterDefinition* parameters) {
     jsize count = (*env)->GetArrayLength(env, array);
     for (jsize i = 0; i < count; ++i) {
         jobject object = (*env)->GetObjectArrayElement(env, array, i);
@@ -228,7 +228,7 @@ void free_parameter_definition(JNIEnv* env, jobjectArray array, ParameterDefinit
     free(parameters);
 }
 
-SignalDefinition* to_signal_definition(JNIEnv* env, jobjectArray array) {
+static SignalDefinition* to_signal_definition(JNIEnv* env, jobjectArray array) {
     jsize count = (*env)->GetArrayLength(env, array);
     SignalDefinition* result = (SignalDefinition*) malloc((uint)count * sizeof(SignalDefinition));
     for (jsize i = 0; i < count; ++i) {
@@ -248,7 +248,7 @@ SignalDefinition* to_signal_definition(JNIEnv* env, jobjectArray array) {
     return result;
 }
 
-void free_signal_definition(JNIEnv* env, jobjectArray array, SignalDefinition* signals) {
+static void free_signal_definition(JNIEnv* env, jobjectArray array, SignalDefinition* signals) {
     jsize count = (*env)->GetArrayLength(env, array);
     for (jsize i = 0; i < count; ++i) {
         jobject object = (*env)->GetObjectArrayElement(env, array, i);
@@ -266,7 +266,7 @@ void free_signal_definition(JNIEnv* env, jobjectArray array, SignalDefinition* s
     free(signals);
 }
 
-SlotDefinition* to_slot_definition(JNIEnv *env, jobjectArray array) {
+static SlotDefinition* to_slot_definition(JNIEnv *env, jobjectArray array) {
     jsize count = (*env)->GetArrayLength(env, array);
     SlotDefinition* result = (SlotDefinition*) malloc((uint)count * sizeof(SlotDefinition));
     for (jsize i = 0; i < count; ++i) {
@@ -289,7 +289,7 @@ SlotDefinition* to_slot_definition(JNIEnv *env, jobjectArray array) {
     return result;
 }
 
-void free_slot_definition(JNIEnv* env, jobjectArray array, SlotDefinition* signals) {
+static void free_slot_definition(JNIEnv* env, jobjectArray array, SlotDefinition* slots) {
     jsize count = (*env)->GetArrayLength(env, array);
     for (jsize i = 0; i < count; ++i) {
         jobject object = (*env)->GetObjectArrayElement(env, array, i);
@@ -297,14 +297,14 @@ void free_slot_definition(JNIEnv* env, jobjectArray array, SlotDefinition* signa
 
         jfieldID nameField = (*env)->GetFieldID(env, class, "name", "Ljava/lang/String;");
         jstring name = (*env)->GetObjectField(env, object, nameField);
-        (*env)->ReleaseStringUTFChars(env, name, signals[i].name);
+        (*env)->ReleaseStringUTFChars(env, name, slots[i].name);
 
         jfieldID parametersField = (*env)->GetFieldID(env, class, "parameters", "[Ljava/lang/Object;");
         jobjectArray parameters = (*env)->GetObjectField(env, object, parametersField);
 
-        free_parameter_definition(env, parameters, signals[i].parameters);
+        free_parameter_definition(env, parameters, slots[i].parameters);
     }
-    free(signals);
+    free(slots);
 }
 
 
@@ -321,12 +321,14 @@ jlong Java_DOtherSideJNI_qmetaobject_1create(JNIEnv *env, jclass t, jlong superQ
 
     PropertyDefinitions c_properties;
     c_properties.count = (*env)->GetArrayLength(env, properties);
+    c_properties.definitions = to_property_definition(env, properties);
 
     jlong result = (jlong) dos_qmetaobject_create((DosQMetaObject*)superQMetaObject, c_name, &c_signals, &c_slots, &c_properties);
     (*env)->ReleaseStringUTFChars(env, name, c_name);
 
     free_signal_definition(env, signals, c_signals.definitions);
     free_slot_definition(env, slots, c_slots.definitions);
+    free_property_definition(env, properties, c_properties.definitions);
 
     return result;
 }
