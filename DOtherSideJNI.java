@@ -43,23 +43,23 @@ class DOtherSideJNI {
     public static native double qvariant_toDouble(long self);
     public static native long qvariant_toQObject(long self);
 
-    public class ParameterDefinition {
+    public static class ParameterDefinition {
         public String name;
         public int metaType;
     };
 
-    public class SignalDefinition {
+    public static class SignalDefinition {
         public String name;
         public ParameterDefinition[] parameters;
     };
 
-    public class SlotDefinition {
+    public static class SlotDefinition {
         public String name;
         public int returnMetaType;
         public ParameterDefinition[] parameters;
     };
 
-    public class PropertyDefinition {
+    public static class PropertyDefinition {
         public String name;
         public int metaType;
         public String readSlot;
@@ -70,4 +70,26 @@ class DOtherSideJNI {
     public static native long qmetaobject_create(long parentQMetaObject, String className, SignalDefinition[] signals, SlotDefinition[] slots, PropertyDefinition[] properties);
 
     public static native void qmetaobject_delete(long self);
+
+    public static enum MetaType {
+        Bool(1),
+        Int(2),
+        Double(6),
+        String(10),
+        VoidStr(31),
+        Float(38),
+        QObject(39),
+        QVariant(41),
+        Void(43);
+
+        private MetaType(int value) {
+            this.value = value;
+        }
+
+        int value() {
+            return this.value;
+        }
+
+        private int value;
+    };
 }

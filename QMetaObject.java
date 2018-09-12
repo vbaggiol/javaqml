@@ -1,6 +1,9 @@
 public class QMetaObject {
-    public QMetaObject(long self) {
-        this.self = self;
+    public QMetaObject(String className,
+                       DOtherSideJNI.SignalDefinition[] signals,
+                       DOtherSideJNI.SlotDefinition[] slots,
+                       DOtherSideJNI.PropertyDefinition[] properties) {
+        this.self = DOtherSideJNI.qmetaobject_create(0, className, signals, slots, properties);
     }
 
     public void delete() {

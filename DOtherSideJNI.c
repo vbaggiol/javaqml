@@ -197,21 +197,37 @@ void JNICALL Java_DOtherSideJNI_qmetaobject_1delete(JNIEnv *env, jclass t, jlong
     dos_qmetaobject_delete((DosQMetaObject*)self);
 }
 
+static const char* get_string_field(JNIEnv* env, jclass class, jobject object, const char* fieldName) {
+    jfieldID field = (*env)->GetFieldID(env, class, fieldName, "Ljava/lang/String;");
+    jstring value = (*env)->GetObjectField(env, object, field);
+    return (*env)->GetStringUTFChars(env, value, 0);
+}
+
+static jobjectArray get_array_field(JNIEnv* env, jclass class, jobject object, const char* fieldName, const char* type) {
+    jfieldID parametersField = (*env)->GetFieldID(env, class, fieldName, type);
+    return (*env)->GetObjectField(env, object, parametersField);
+}
+
+static int get_int_field(JNIEnv* env, jclass class, jobject object, const char* fieldName) {
+    jfieldID field = (*env)->GetFieldID(env, class, fieldName, "I");
+    return (*env)->GetIntField(env, object, field);
+}
+
+static void free_string_field(JNIEnv* env, jclass class, jobject object, const char* fieldName, const char* c_value) {
+    jfieldID field = (*env)->GetFieldID(env, class, fieldName, "Ljava/lang/String;");
+    jstring value = (*env)->GetObjectField(env, object, field);
+    (*env)->ReleaseStringUTFChars(env, value, c_value);
+}
+
 static ParameterDefinition* to_parameter_definition(JNIEnv* env, jobjectArray array) {
     jsize count = (*env)->GetArrayLength(env, array);
-    ParameterDefinition* result = (ParameterDefinition*) malloc((uint)count * sizeof(ParameterDefinition));
+    ParameterDefinition* result = count == 0 ? NULL : (ParameterDefinition*) malloc((uint)count * sizeof(ParameterDefinition));
     for (jsize i = 0; i < count; ++i) {
         jobject object = (*env)->GetObjectArrayElement(env, array, i);
         jclass class = (*env)->GetObjectClass(env, object);
-
-        jfieldID nameFieldId = (*env)->GetFieldID(env, class, "name", "Ljava/lang/String;");
-        jstring name = (*env)->GetObjectField(env, object, nameFieldId);
-        result[i].name = (*env)->GetStringUTFChars(env, name, 0);
-
-        jfieldID metaTypeFieldId = (*env)->GetFieldID(env, class, "metaType", "I");
-        result[i].metaType = (*env)->GetIntField(env, object, metaTypeFieldId);
+        result[i].name = get_string_field(env, class, object, "name");
+        result[i].metaType = get_int_field(env, class, object, "metaType");
     }
-
     return result;
 }
 
@@ -220,28 +236,21 @@ static void free_parameter_definition(JNIEnv* env, jobjectArray array, Parameter
     for (jsize i = 0; i < count; ++i) {
         jobject object = (*env)->GetObjectArrayElement(env, array, i);
         jclass class = (*env)->GetObjectClass(env, object);
-
-        jfieldID nameFieldId = (*env)->GetFieldID(env, class, "name", "Ljava/lang/String;");
-        jstring name = (*env)->GetObjectField(env, object, nameFieldId);
-        (*env)->ReleaseStringUTFChars(env, name, parameters[i].name);
+        free_string_field(env, class, object, "name", parameters[i].name);
     }
     free(parameters);
 }
 
 static SignalDefinition* to_signal_definition(JNIEnv* env, jobjectArray array) {
     jsize count = (*env)->GetArrayLength(env, array);
-    SignalDefinition* result = (SignalDefinition*) malloc((uint)count * sizeof(SignalDefinition));
+    SignalDefinition* result = count == 0 ? NULL : (SignalDefinition*) malloc((uint)count * sizeof(SignalDefinition));
     for (jsize i = 0; i < count; ++i) {
         jobject object = (*env)->GetObjectArrayElement(env, array, i);
         jclass class = (*env)->GetObjectClass(env, object);
 
-        jfieldID nameField = (*env)->GetFieldID(env, class, "name", "Ljava/lang/String;");
-        jstring name = (*env)->GetObjectField(env, object, nameField);
-        result[i].name = (*env)->GetStringUTFChars(env, name, 0);
+        result[i].name = get_string_field(env, class, object, "name");
 
-        jfieldID parametersField = (*env)->GetFieldID(env, class, "parameters", "[Ljava/lang/Object;");
-        jobjectArray parameters = (*env)->GetObjectField(env, object, parametersField);
-
+        jobjectArray parameters = get_array_field(env, class, object, "parameters", "[LDOtherSideJNI$ParameterDefinition;");
         result[i].parametersCount = (*env)->GetArrayLength(env, parameters);
         result[i].parameters = to_parameter_definition(env, parameters);
     }
@@ -254,13 +263,9 @@ static void free_signal_definition(JNIEnv* env, jobjectArray array, SignalDefini
         jobject object = (*env)->GetObjectArrayElement(env, array, i);
         jclass class = (*env)->GetObjectClass(env, object);
 
-        jfieldID nameField = (*env)->GetFieldID(env, class, "name", "Ljava/lang/String;");
-        jstring name = (*env)->GetObjectField(env, object, nameField);
-        (*env)->ReleaseStringUTFChars(env, name, signals[i].name);
+        free_string_field(env, class, object, "name", signals[i].name);
 
-        jfieldID parametersField = (*env)->GetFieldID(env, class, "parameters", "[Ljava/lang/Object;");
-        jobjectArray parameters = (*env)->GetObjectField(env, object, parametersField);
-
+        jobjectArray parameters = get_array_field(env, class, object, "parameters", "[LDOtherSideJNI$ParameterDefinition;");
         free_parameter_definition(env, parameters, signals[i].parameters);
     }
     free(signals);
@@ -268,21 +273,15 @@ static void free_signal_definition(JNIEnv* env, jobjectArray array, SignalDefini
 
 static SlotDefinition* to_slot_definition(JNIEnv *env, jobjectArray array) {
     jsize count = (*env)->GetArrayLength(env, array);
-    SlotDefinition* result = (SlotDefinition*) malloc((uint)count * sizeof(SlotDefinition));
+    SlotDefinition* result = count == 0 ? NULL : (SlotDefinition*) malloc((uint)count * sizeof(SlotDefinition));
     for (jsize i = 0; i < count; ++i) {
         jobject object = (*env)->GetObjectArrayElement(env, array, i);
         jclass class = (*env)->GetObjectClass(env, object);
 
-        jfieldID nameField = (*env)->GetFieldID(env, class, "name", "Ljava/lang/String;");
-        jstring name = (*env)->GetObjectField(env, object, nameField);
-        result[i].name = (*env)->GetStringUTFChars(env, name, 0);
+        result[i].name = get_string_field(env, class, object, "name");
+        result[i].returnMetaType = get_int_field(env, class, object, "returnMetaType");
 
-        jfieldID returnMetaTypeField = (*env)->GetFieldID(env, class, "returnMetaType", "I");
-        result[i].returnMetaType = (*env)->GetIntField(env, object, returnMetaTypeField);
-
-        jfieldID parametersField = (*env)->GetFieldID(env, class, "parameters", "[Ljava/lang/Object;");
-        jobjectArray parameters = (*env)->GetObjectField(env, object, parametersField);
-
+        jobjectArray parameters = get_array_field(env, class, object, "parameters", "[LDOtherSideJNI$ParameterDefinition;");
         result[i].parametersCount = (*env)->GetArrayLength(env, parameters);
         result[i].parameters = to_parameter_definition(env, parameters);
     }
@@ -295,13 +294,9 @@ static void free_slot_definition(JNIEnv* env, jobjectArray array, SlotDefinition
         jobject object = (*env)->GetObjectArrayElement(env, array, i);
         jclass class = (*env)->GetObjectClass(env, object);
 
-        jfieldID nameField = (*env)->GetFieldID(env, class, "name", "Ljava/lang/String;");
-        jstring name = (*env)->GetObjectField(env, object, nameField);
-        (*env)->ReleaseStringUTFChars(env, name, slots[i].name);
+        free_string_field(env, class, object, "name", slots[i].name);
 
-        jfieldID parametersField = (*env)->GetFieldID(env, class, "parameters", "[Ljava/lang/Object;");
-        jobjectArray parameters = (*env)->GetObjectField(env, object, parametersField);
-
+        jobjectArray parameters = get_array_field(env, class, object, "parameters", "[LDOtherSideJNI$ParameterDefinition;");
         free_parameter_definition(env, parameters, slots[i].parameters);
     }
     free(slots);
@@ -309,39 +304,16 @@ static void free_slot_definition(JNIEnv* env, jobjectArray array, SlotDefinition
 
 static PropertyDefinition* to_property_definition(JNIEnv *env, jobjectArray array) {
     jsize count = (*env)->GetArrayLength(env, array);
-    PropertyDefinition* result = (PropertyDefinition*) malloc((uint)count * sizeof(PropertyDefinition));
+    PropertyDefinition* result = count == 0 ? NULL : (PropertyDefinition*) malloc((uint)count * sizeof(PropertyDefinition));
     for (jsize i = 0; i < count; ++i) {
         jobject object = (*env)->GetObjectArrayElement(env, array, i);
         jclass class = (*env)->GetObjectClass(env, object);
 
-        {
-            jfieldID nameField = (*env)->GetFieldID(env, class, "name", "Ljava/lang/String;");
-            jstring name = (*env)->GetObjectField(env, object, nameField);
-            result[i].name = (*env)->GetStringUTFChars(env, name, 0);
-        }
-
-        {
-            jfieldID metaTypeField = (*env)->GetFieldID(env, class, "metaType", "I");
-            result[i].propertyMetaType = (*env)->GetIntField(env, object, metaTypeField);
-        }
-
-        {
-            jfieldID readSlotField = (*env)->GetFieldID(env, class, "readSlot", "Ljava/lang/String;");
-            jstring readSlot = (*env)->GetObjectField(env, object, readSlotField);
-            result[i].readSlot = (*env)->GetStringUTFChars(env, readSlot, 0);
-        }
-
-        {
-            jfieldID writeSlotField = (*env)->GetFieldID(env, class, "writeSlot", "Ljava/lang/String;");
-            jstring writeSlot = (*env)->GetObjectField(env, object, writeSlotField);
-            result[i].writeSlot = (*env)->GetStringUTFChars(env, writeSlot, 0);
-        }
-
-        {
-            jfieldID notifySignalField = (*env)->GetFieldID(env, class, "notifySignal", "Ljava/lang/String;");
-            jstring notifySignal = (*env)->GetObjectField(env, object, notifySignalField);
-            result[i].notifySignal = (*env)->GetStringUTFChars(env, notifySignal, 0);
-        }
+        result[i].name = get_string_field(env, class, object, "name");
+        result[i].propertyMetaType = get_int_field(env, class, object, "metaType");
+        result[i].readSlot = get_string_field(env, class, object, "readSlot");
+        result[i].writeSlot = get_string_field(env, class, object, "writeSlot");
+        result[i].notifySignal = get_string_field(env, class, object, "notifySignal");
     }
     return result;
 }
@@ -351,30 +323,10 @@ static void free_property_definition(JNIEnv* env, jobjectArray array, PropertyDe
     for (jsize i = 0; i < count; ++i) {
         jobject object = (*env)->GetObjectArrayElement(env, array, i);
         jclass class = (*env)->GetObjectClass(env, object);
-
-        {
-            jfieldID nameField = (*env)->GetFieldID(env, class, "name", "Ljava/lang/String;");
-            jstring name = (*env)->GetObjectField(env, object, nameField);
-            (*env)->ReleaseStringUTFChars(env, name, properties[i].name);
-        }
-
-        {
-            jfieldID readSlotField = (*env)->GetFieldID(env, class, "readSlot", "Ljava/lang/String;");
-            jstring readSlot = (*env)->GetObjectField(env, object, readSlotField);
-            (*env)->ReleaseStringUTFChars(env, readSlot, properties[i].readSlot);
-        }
-
-        {
-            jfieldID writeSlotField = (*env)->GetFieldID(env, class, "writeSlot", "Ljava/lang/String;");
-            jstring writeSlot = (*env)->GetObjectField(env, object, writeSlotField);
-            (*env)->ReleaseStringUTFChars(env, writeSlot, properties[i].writeSlot);
-        }
-
-        {
-            jfieldID notifySignalField = (*env)->GetFieldID(env, class, "notifySignal", "Ljava/lang/String;");
-            jstring notifySignal = (*env)->GetObjectField(env, object, notifySignalField);
-            (*env)->ReleaseStringUTFChars(env, notifySignal, properties[i].notifySignal);
-        }
+        free_string_field(env, class, object, "name", properties[i].name);
+        free_string_field(env, class, object, "readSlot", properties[i].readSlot);
+        free_string_field(env, class, object, "writeSlot", properties[i].writeSlot);
+        free_string_field(env, class, object, "notifySignal", properties[i].notifySignal);
     }
     free(properties);
 }
@@ -382,7 +334,6 @@ static void free_property_definition(JNIEnv* env, jobjectArray array, PropertyDe
 
 jlong JNICALL Java_DOtherSideJNI_qmetaobject_1create(JNIEnv *env, jclass t, jlong superQMetaObject, jstring name, jobjectArray signals, jobjectArray slots, jobjectArray properties)
 {
-    const char *c_name = (*env)->GetStringUTFChars(env, name, 0);
     SignalDefinitions c_signals;
     c_signals.count = (*env)->GetArrayLength(env, signals);
     c_signals.definitions = to_signal_definition(env, signals);
@@ -395,7 +346,8 @@ jlong JNICALL Java_DOtherSideJNI_qmetaobject_1create(JNIEnv *env, jclass t, jlon
     c_properties.count = (*env)->GetArrayLength(env, properties);
     c_properties.definitions = to_property_definition(env, properties);
 
-    jlong result = (jlong) dos_qmetaobject_create((DosQMetaObject*)superQMetaObject, c_name, &c_signals, &c_slots, &c_properties);
+    const char *c_name = (*env)->GetStringUTFChars(env, name, 0);
+    jlong result = (jlong) dos_qmetaobject_create(NULL, c_name, &c_signals, &c_slots, &c_properties);
     (*env)->ReleaseStringUTFChars(env, name, c_name);
 
     free_signal_definition(env, signals, c_signals.definitions);
