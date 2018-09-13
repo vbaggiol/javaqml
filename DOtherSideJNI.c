@@ -3,6 +3,27 @@
 #include <DOtherSide/DOtherSide.h>
 
 #include <stdlib.h>
+#include <assert.h>
+
+static JavaVM *callback_jvm;
+static jclass callback_class;
+static jmethodID callback_method;
+
+static void c_on_slot_called() {
+    JNIEnv *env;
+    jint rs = (*callback_jvm)->AttachCurrentThread(callback_jvm, &env, NULL);
+    assert (rs == JNI_OK);
+    (*env)->CallVoidMethod(env, o, );
+}
+
+
+void JNICALL Java_DOtherSideJNI_initialize(JNIEnv *env , jclass t)
+{
+    jint rs = (*env)->GetJavaVM(env, &callback_jvm);
+    assert (rs == JNI_OK);
+    callback_method = (*env)->GetMethodID(env, t, "onSlotCalled", "()V");
+    callback_class = t;
+}
 
 void JNICALL Java_DOtherSideJNI_qapplication_1create(JNIEnv *env, jclass t)
 {
@@ -221,7 +242,7 @@ static void free_string_field(JNIEnv* env, jclass class, jobject object, const c
 
 static ParameterDefinition* to_parameter_definition(JNIEnv* env, jobjectArray array) {
     jsize count = (*env)->GetArrayLength(env, array);
-    ParameterDefinition* result = count == 0 ? NULL : (ParameterDefinition*) malloc((uint)count * sizeof(ParameterDefinition));
+    ParameterDefinition* result = count == 0 ? NULL : (ParameterDefinition*) malloc((size_t)count * sizeof(ParameterDefinition));
     for (jsize i = 0; i < count; ++i) {
         jobject object = (*env)->GetObjectArrayElement(env, array, i);
         jclass class = (*env)->GetObjectClass(env, object);
@@ -243,7 +264,7 @@ static void free_parameter_definition(JNIEnv* env, jobjectArray array, Parameter
 
 static SignalDefinition* to_signal_definition(JNIEnv* env, jobjectArray array) {
     jsize count = (*env)->GetArrayLength(env, array);
-    SignalDefinition* result = count == 0 ? NULL : (SignalDefinition*) malloc((uint)count * sizeof(SignalDefinition));
+    SignalDefinition* result = count == 0 ? NULL : (SignalDefinition*) malloc((size_t)count * sizeof(SignalDefinition));
     for (jsize i = 0; i < count; ++i) {
         jobject object = (*env)->GetObjectArrayElement(env, array, i);
         jclass class = (*env)->GetObjectClass(env, object);
@@ -273,7 +294,7 @@ static void free_signal_definition(JNIEnv* env, jobjectArray array, SignalDefini
 
 static SlotDefinition* to_slot_definition(JNIEnv *env, jobjectArray array) {
     jsize count = (*env)->GetArrayLength(env, array);
-    SlotDefinition* result = count == 0 ? NULL : (SlotDefinition*) malloc((uint)count * sizeof(SlotDefinition));
+    SlotDefinition* result = count == 0 ? NULL : (SlotDefinition*) malloc((size_t)count * sizeof(SlotDefinition));
     for (jsize i = 0; i < count; ++i) {
         jobject object = (*env)->GetObjectArrayElement(env, array, i);
         jclass class = (*env)->GetObjectClass(env, object);
@@ -304,7 +325,7 @@ static void free_slot_definition(JNIEnv* env, jobjectArray array, SlotDefinition
 
 static PropertyDefinition* to_property_definition(JNIEnv *env, jobjectArray array) {
     jsize count = (*env)->GetArrayLength(env, array);
-    PropertyDefinition* result = count == 0 ? NULL : (PropertyDefinition*) malloc((uint)count * sizeof(PropertyDefinition));
+    PropertyDefinition* result = count == 0 ? NULL : (PropertyDefinition*) malloc((size_t)count * sizeof(PropertyDefinition));
     for (jsize i = 0; i < count; ++i) {
         jobject object = (*env)->GetObjectArrayElement(env, array, i);
         jclass class = (*env)->GetObjectClass(env, object);
@@ -355,4 +376,33 @@ jlong JNICALL Java_DOtherSideJNI_qmetaobject_1create(JNIEnv *env, jclass t, jlon
     free_property_definition(env, properties, c_properties.definitions);
 
     return result;
+}
+
+jlong JNICALL Java_DOtherSideJNI_qobject_1qmetaobject(JNIEnv *env, jclass t)
+{
+    return (jlong) dos_qobject_qmetaobject();
+}
+
+jlong JNICALL Java_DOtherSideJNI_qabstractlistmodel_1qmetaobject(JNIEnv *env, jclass t)
+{
+    return (jlong) dos_qabstractlistmodel_qmetaobject();
+}
+
+jlong JNICALL Java_DOtherSideJNI_qabstracttablemodel_1qmetaobject(JNIEnv *env, jclass t)
+{
+    return (jlong) dos_qabstracttablemodel_qmetaobject();
+}
+
+jlong JNICALL Java_DOtherSideJNI_qabstractitemmodel_1qmetaobject(JNIEnv *env, jclass t)
+{
+    return (jlong) dos_qabstractitemmodel_qmetaobject();
+}
+
+void JNICALL Java_DOtherSideJNI_qobject_1delete(JNIEnv *env, jclass t, jlong self)
+{
+    dos_qobject_delete((DosQObject*) self);
+}
+
+void JNICALL Java_DOtherSideJNI_qobject_1deleteLater(JNIEnv *env, jclass t, jlong self)
+{
 }

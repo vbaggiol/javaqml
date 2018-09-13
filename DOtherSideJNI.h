@@ -9,6 +9,14 @@ extern "C" {
 #endif
 /*
  * Class:     DOtherSideJNI
+ * Method:    initialize
+ * Signature: ()V
+ */
+JNIEXPORT void JNICALL Java_DOtherSideJNI_initialize
+  (JNIEnv *, jclass);
+
+/*
+ * Class:     DOtherSideJNI
  * Method:    qapplication_create
  * Signature: ()V
  */
@@ -302,6 +310,54 @@ JNIEXPORT jlong JNICALL Java_DOtherSideJNI_qmetaobject_1create
  */
 JNIEXPORT void JNICALL Java_DOtherSideJNI_qmetaobject_1delete
   (JNIEnv *, jclass, jlong);
+
+/*
+ * Class:     DOtherSideJNI
+ * Method:    qobject_qmetaobject
+ * Signature: ()J
+ */
+JNIEXPORT jlong JNICALL Java_DOtherSideJNI_qobject_1qmetaobject
+  (JNIEnv *, jclass);
+
+/*
+ * Class:     DOtherSideJNI
+ * Method:    qobject_delete
+ * Signature: (J)V
+ */
+JNIEXPORT void JNICALL Java_DOtherSideJNI_qobject_1delete
+  (JNIEnv *, jclass, jlong);
+
+/*
+ * Class:     DOtherSideJNI
+ * Method:    qobject_deleteLater
+ * Signature: (J)V
+ */
+JNIEXPORT void JNICALL Java_DOtherSideJNI_qobject_1deleteLater
+  (JNIEnv *, jclass, jlong);
+
+/*
+ * Class:     DOtherSideJNI
+ * Method:    qabstractlistmodel_qmetaobject
+ * Signature: ()J
+ */
+JNIEXPORT jlong JNICALL Java_DOtherSideJNI_qabstractlistmodel_1qmetaobject
+  (JNIEnv *, jclass);
+
+/*
+ * Class:     DOtherSideJNI
+ * Method:    qabstracttablemodel_qmetaobject
+ * Signature: ()J
+ */
+JNIEXPORT jlong JNICALL Java_DOtherSideJNI_qabstracttablemodel_1qmetaobject
+  (JNIEnv *, jclass);
+
+/*
+ * Class:     DOtherSideJNI
+ * Method:    qabstractitemmodel_qmetaobject
+ * Signature: ()J
+ */
+JNIEXPORT jlong JNICALL Java_DOtherSideJNI_qabstractitemmodel_1qmetaobject
+  (JNIEnv *, jclass);
 
 #ifdef __cplusplus
 }

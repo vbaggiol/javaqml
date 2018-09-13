@@ -1,7 +1,10 @@
 class DOtherSideJNI {
     static {
 	System.loadLibrary("DOtherSideJNI");
+        initialize();
     }
+
+    public static native void initialize();
 
     public static native void qapplication_create();
     public static native void qapplication_exec();
@@ -71,6 +74,14 @@ class DOtherSideJNI {
 
     public static native void qmetaobject_delete(long self);
 
+    public static native long qobject_qmetaobject();
+    public static native void qobject_delete(long self);
+    public static native void qobject_deleteLater(long self);
+
+    public static native long qabstractlistmodel_qmetaobject();
+    public static native long qabstracttablemodel_qmetaobject();
+    public static native long qabstractitemmodel_qmetaobject();
+
     public static enum MetaType {
         Bool(1),
         Int(2),
@@ -92,4 +103,7 @@ class DOtherSideJNI {
 
         private int value;
     };
+
+    private static void onSlotCalled() {
+    }
 }

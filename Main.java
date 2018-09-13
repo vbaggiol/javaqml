@@ -29,6 +29,7 @@ public class Main {
 
         QMetaObject metaObject = new QMetaObject("Temp", signals, slots, properties);
 
+
 //        QApplication app = new QApplication();
 //	QQmlApplicationEngine engine = new QQmlApplicationEngine();
 //	QQmlContext context = engine.rootContext();

@@ -84,5 +84,10 @@ public class QVariant implements Cloneable {
         return new QVariant(this);
     }
 
+    @Override
+    public void finalize() {
+        delete();
+    }
+
     private long self;
 }
