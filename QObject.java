@@ -1,22 +1,18 @@
 public class QObject {
     static {
-        staticMetaObject = DOtherSideJNI.qobject_qmetaobject();
+        staticMetaObject = new QMetaObject(DOtherSideJNI.qobject_qmetaobject());
     }
 
     public QObject() {
         self = 0;
     }
 
-    public static QMetaObject metaObject() {
+    public QMetaObject metaObject() {
         return staticMetaObject;
     }
 
-    public QMetaObject metaObject() {
-        return QObject.metaObject();
-    }
-
     public void delete() {
-        return DOtherSideJNI.qobject_delete(self);
+        DOtherSideJNI.qobject_delete(self);
     }
 
     protected void onSlotCalled(QVariant slotName, QVariant[] parameters) {

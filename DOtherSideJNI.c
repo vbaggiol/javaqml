@@ -9,13 +9,12 @@ static JavaVM *callback_jvm;
 static jclass callback_class;
 static jmethodID callback_method;
 
-static void c_on_slot_called() {
+static void c_on_slot_called(void* self, void* slot_name, int parameters_count, void** parameters) {
     JNIEnv *env;
     jint rs = (*callback_jvm)->AttachCurrentThread(callback_jvm, &env, NULL);
     assert (rs == JNI_OK);
     (*env)->CallVoidMethod(env, o, );
 }
-
 
 void JNICALL Java_DOtherSideJNI_initialize(JNIEnv *env , jclass t)
 {

@@ -1,5 +1,8 @@
+import java.util.HashMap;
+
 class DOtherSideJNI {
     static {
+        objectsMap = new HashMap<Long, QObject>();
 	System.loadLibrary("DOtherSideJNI");
         initialize();
     }
@@ -104,6 +107,15 @@ class DOtherSideJNI {
         private int value;
     };
 
-    private static void onSlotCalled() {
+    private static void onSlotCalled(long self, long slotName, long[] arguments) {
+        QObject object = objectsMap.get(self);
+        if (object != null) {
+            QVariant[] temp = new QVariant[arguments.length];
+            for (int i = 0; i < arguments.length; ++i)
+                temp[i] = new QVariant(arguments[i]);
+            object.onSlotCalled(new QVariant(slotName), temp);
+        }
     }
+
+    private static HashMap<Long, QObject> objectsMap;
 }
