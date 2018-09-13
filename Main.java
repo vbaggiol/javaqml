@@ -27,7 +27,7 @@ public class Main {
         properties[0].writeSlot = "setName";
         properties[0].notifySignal = "nameChanged";
 
-        QMetaObject metaObject = new QMetaObject("Temp", signals, slots, properties);
+        QMetaObject metaObject = new QMetaObject(QObject.staticMetaObject, "Temp", signals, slots, properties);
 
 
 //        QApplication app = new QApplication();
