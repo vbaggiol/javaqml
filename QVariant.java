@@ -1,4 +1,11 @@
-public class QVariant implements Cloneable {
+public class QVariant {
+    public static QVariant fromVoidPointer(long ptr, boolean takeOwnership) {
+        QVariant result = new QVariant();
+        result.delete();
+        result.self = takeOwnership ? ptr : DOtherSideJNI.qvariant_create_qvariant(ptr);
+        return result;
+    }
+
     public QVariant() {
         this.self = DOtherSideJNI.qvariant_create();
     }
@@ -27,6 +34,10 @@ public class QVariant implements Cloneable {
         this.self = DOtherSideJNI.qvariant_create_double(value);
     }
 
+    public QVariant(QObject object) {
+        this.self = DOtherSideJNI.qvariant_create_qobject(object.voidPointer());
+    }
+
     public void SetValue(int value) {
         DOtherSideJNI.qvariant_setInt(self, value);
     }
@@ -45,6 +56,10 @@ public class QVariant implements Cloneable {
 
     public void SetValue(double value) {
         DOtherSideJNI.qvariant_setDouble(self, value);
+    }
+
+    public void setValue(QObject value) {
+        DOtherSideJNI.qvariant_setQObject(self, value.voidPointer());
     }
 
     public int toInt() {
@@ -77,16 +92,6 @@ public class QVariant implements Cloneable {
 
     public long voidPointer() {
         return self;
-    }
-
-    @Override
-    protected QVariant clone() {
-        return new QVariant(this);
-    }
-
-    @Override
-    public void finalize() {
-        delete();
     }
 
     private long self;

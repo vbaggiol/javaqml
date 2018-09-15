@@ -185,6 +185,14 @@ JNIEXPORT jlong JNICALL Java_DOtherSideJNI_qvariant_1create_1double
 
 /*
  * Class:     DOtherSideJNI
+ * Method:    qvariant_create_qobject
+ * Signature: (J)J
+ */
+JNIEXPORT jlong JNICALL Java_DOtherSideJNI_qvariant_1create_1qobject
+  (JNIEnv *, jclass, jlong);
+
+/*
+ * Class:     DOtherSideJNI
  * Method:    qvariant_setInt
  * Signature: (JI)V
  */
@@ -229,6 +237,14 @@ JNIEXPORT void JNICALL Java_DOtherSideJNI_qvariant_1setString
  * Signature: (JJ)V
  */
 JNIEXPORT void JNICALL Java_DOtherSideJNI_qvariant_1setQObject
+  (JNIEnv *, jclass, jlong, jlong);
+
+/*
+ * Class:     DOtherSideJNI
+ * Method:    qvariant_assign
+ * Signature: (JJ)V
+ */
+JNIEXPORT void JNICALL Java_DOtherSideJNI_qvariant_1assign
   (JNIEnv *, jclass, jlong, jlong);
 
 /*
@@ -310,6 +326,14 @@ JNIEXPORT jlong JNICALL Java_DOtherSideJNI_qmetaobject_1create
  */
 JNIEXPORT void JNICALL Java_DOtherSideJNI_qmetaobject_1delete
   (JNIEnv *, jclass, jlong);
+
+/*
+ * Class:     DOtherSideJNI
+ * Method:    qobject_create
+ * Signature: (JJ)J
+ */
+JNIEXPORT jlong JNICALL Java_DOtherSideJNI_qobject_1create
+  (JNIEnv *, jclass, jlong, jlong);
 
 /*
  * Class:     DOtherSideJNI

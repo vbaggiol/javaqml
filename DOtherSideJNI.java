@@ -1,8 +1,5 @@
-import java.util.HashMap;
-
 class DOtherSideJNI {
     static {
-        objectsMap = new HashMap<Long, QObject>();
 	System.loadLibrary("DOtherSideJNI");
         initialize();
     }
@@ -34,12 +31,14 @@ class DOtherSideJNI {
     public static native long qvariant_create_qvariant(long value);
     public static native long qvariant_create_float(float value);
     public static native long qvariant_create_double(double value);
+    public static native long qvariant_create_qobject(long value);
     public static native void qvariant_setInt(long self, int value);
     public static native void qvariant_setBool(long self, boolean value);
     public static native void qvariant_setFloat(long self, float value);
     public static native void qvariant_setDouble(long self, double value);
     public static native void qvariant_setString(long self, String value);
     public static native void qvariant_setQObject(long self, long value);
+    public static native void qvariant_assign(long lhs, long rhs);
     public static native boolean qvariant_isNull(long self);
     public static native void qvariant_delete(long self);
     public static native int qvariant_toInt(long self);
@@ -77,6 +76,7 @@ class DOtherSideJNI {
 
     public static native void qmetaobject_delete(long self);
 
+    public static native long qobject_create(long javaObjectId, long metaObject);
     public static native long qobject_qmetaobject();
     public static native void qobject_delete(long self);
     public static native void qobject_deleteLater(long self);
@@ -108,14 +108,6 @@ class DOtherSideJNI {
     };
 
     private static void onSlotCalled(long self, long slotName, long[] arguments) {
-        QObject object = objectsMap.get(self);
-        if (object != null) {
-            QVariant[] temp = new QVariant[arguments.length];
-            for (int i = 0; i < arguments.length; ++i)
-                temp[i] = new QVariant(arguments[i]);
-            object.onSlotCalled(new QVariant(slotName), temp);
-        }
+        QObject.onSlotCalledCallback(self, slotName, arguments);
     }
-
-    private static HashMap<Long, QObject> objectsMap;
 }

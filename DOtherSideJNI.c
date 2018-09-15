@@ -13,14 +13,26 @@ static void c_on_slot_called(void* self, void* slot_name, int parameters_count, 
     JNIEnv *env;
     jint rs = (*callback_jvm)->AttachCurrentThread(callback_jvm, &env, NULL);
     assert (rs == JNI_OK);
-    (*env)->CallVoidMethod(env, o, );
+
+    jlong* temp = (jlong*) malloc(parameters_count * sizeof(jlong));
+    for (int i = 0; i < parameters_count; ++i) {
+        temp[i] = (jlong)(parameters[i]);
+    }
+    jlongArray array = (*env)->NewLongArray(env, parameters_count);
+    (*env)->SetLongArrayRegion(env, array, 0, parameters_count, temp);
+    free(temp);
+
+    (*env)->CallStaticVoidMethod(env, callback_class, callback_method, (jlong) self, (jlong) slot_name, array);
+
+    printf("Ciaooooooooooo %s\n", dos_qvariant_toString(parameters[0]));
+
 }
 
 void JNICALL Java_DOtherSideJNI_initialize(JNIEnv *env , jclass t)
 {
     jint rs = (*env)->GetJavaVM(env, &callback_jvm);
     assert (rs == JNI_OK);
-    callback_method = (*env)->GetMethodID(env, t, "onSlotCalled", "()V");
+    callback_method = (*env)->GetStaticMethodID(env, t, "onSlotCalled", "(JJ[J)V");
     callback_class = t;
 }
 
@@ -105,7 +117,7 @@ void JNICALL Java_DOtherSideJNI_qurl_1delete(JNIEnv *env, jclass t, jlong self)
 }
 
 jlong JNICALL Java_DOtherSideJNI_qvariant_1create(JNIEnv *env, jclass t)
-{
+{    
     return (jlong)dos_qvariant_create();
 }
 
@@ -140,6 +152,11 @@ jlong JNICALL Java_DOtherSideJNI_qvariant_1create_1float(JNIEnv *env, jclass t, 
 jlong JNICALL Java_DOtherSideJNI_qvariant_1create_1double(JNIEnv *env, jclass t, jdouble value)
 {
     return (jlong)dos_qvariant_create_double(value);
+}
+
+jlong Java_DOtherSideJNI_qvariant_1create_1qobject(JNIEnv *env, jclass t, jlong value)
+{
+    return (jlong) dos_qvariant_create_qobject((DosQObject*) value);
 }
 
 void JNICALL Java_DOtherSideJNI_qvariant_1setInt(JNIEnv *env, jclass t, jlong self, jint value)
@@ -367,7 +384,7 @@ jlong JNICALL Java_DOtherSideJNI_qmetaobject_1create(JNIEnv *env, jclass t, jlon
     c_properties.definitions = to_property_definition(env, properties);
 
     const char *c_name = (*env)->GetStringUTFChars(env, name, 0);
-    jlong result = (jlong) dos_qmetaobject_create(NULL, c_name, &c_signals, &c_slots, &c_properties);
+    jlong result = (jlong) dos_qmetaobject_create((DosQMetaObject*) superQMetaObject, c_name, &c_signals, &c_slots, &c_properties);
     (*env)->ReleaseStringUTFChars(env, name, c_name);
 
     free_signal_definition(env, signals, c_signals.definitions);
@@ -397,6 +414,11 @@ jlong JNICALL Java_DOtherSideJNI_qabstractitemmodel_1qmetaobject(JNIEnv *env, jc
     return (jlong) dos_qabstractitemmodel_qmetaobject();
 }
 
+jlong JNICALL Java_DOtherSideJNI_qobject_1create(JNIEnv *env, jclass t, jlong javaObjectId, jlong metaObject)
+{
+    return dos_qobject_create((void*)javaObjectId, (DosQMetaObject*) metaObject, c_on_slot_called);
+}
+
 void JNICALL Java_DOtherSideJNI_qobject_1delete(JNIEnv *env, jclass t, jlong self)
 {
     dos_qobject_delete((DosQObject*) self);
@@ -404,4 +426,10 @@ void JNICALL Java_DOtherSideJNI_qobject_1delete(JNIEnv *env, jclass t, jlong sel
 
 void JNICALL Java_DOtherSideJNI_qobject_1deleteLater(JNIEnv *env, jclass t, jlong self)
 {
+    dos_qobject_deleteLater((DosQObject*) self);
+}
+
+void JNICALL Java_DOtherSideJNI_qvariant_1assign(JNIEnv *env, jclass t, jlong lhs, jlong rhs)
+{
+    dos_qvariant_assign((DosQVariant*)lhs, (DosQVariant*)rhs);
 }
