@@ -86,6 +86,7 @@ class DOtherSideJNI {
     public static native long qabstractitemmodel_qmetaobject();
 
     public static enum MetaType {
+        UnknownType(0),
         Bool(1),
         Int(2),
         Double(6),
