@@ -3,6 +3,7 @@
  */
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import java.beans.IntrospectionException;
 
@@ -35,7 +36,10 @@ public class TestQmlMetaObjectBuilder {
         assertEquals("setName", slots[1].name);
         assertEquals(DOtherSideJNI.MetaType.Void.value(), slots[1].returnMetaType);
         assertEquals(1, slots[1].parameters.length);
-        assertEquals("value", slots[1].parameters[0].name);
+        String parameterName = slots[1].parameters[0].name;
+        // if the code was compiled with the option -parameters, then the name in the source code is returned
+        // otherwise arg0 is generated
+        assertTrue("name".equals(parameterName) || "arg0".equals(parameterName));
         assertEquals(DOtherSideJNI.MetaType.String.value(), slots[1].parameters[0].metaType);
     }
    
