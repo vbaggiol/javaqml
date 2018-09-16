@@ -13,6 +13,6 @@ cmake ..
 make
 cd ..
 export LD_LIBRARY_PATH=`pwd`/build
-javac Main.java && java Main
+./gradlew build test run
 ```
 
