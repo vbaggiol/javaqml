@@ -26,7 +26,7 @@ public class TestQmlMetaObjectBuilder {
 
     @Test
     public void testCreateSlotDefinitions() {
-        DOtherSideJNI.SlotDefinition[] slots = builder.createQSlotDefinitions();
+        DOtherSideJNI.SlotDefinition[] slots = builder.createSlotDefinitions();
         assertEquals(2, slots.length);
         assertEquals("name", slots[0].name);
         assertEquals(DOtherSideJNI.MetaType.String.value(), slots[0].returnMetaType);
@@ -41,7 +41,7 @@ public class TestQmlMetaObjectBuilder {
    
     @Test
     public void testCreatePropertyDefinitions() {
-        DOtherSideJNI.PropertyDefinition[] properties = builder.createQPropertyDefinitions();
+        DOtherSideJNI.PropertyDefinition[] properties = builder.createPropertyDefinitions();
         assertEquals(1, properties.length);
         assertEquals("name", properties[0].name);
         assertEquals(DOtherSideJNI.MetaType.String.value(), properties[0].metaType);

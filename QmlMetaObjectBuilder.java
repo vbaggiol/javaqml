@@ -23,36 +23,6 @@ public class QmlMetaObjectBuilder {
     private final Class<? extends QObject> qClass;
     private final List<PropertyDescriptor> propertyDescriptors;
     
-    QMetaObject buildx() {
-        DOtherSideJNI.SlotDefinition[] slots = new DOtherSideJNI.SlotDefinition[slotNames.size()];
-        slots[0] = new DOtherSideJNI.SlotDefinition();
-        slots[0].name = "name";
-        slots[0].returnMetaType = DOtherSideJNI.MetaType.String.value();
-        slots[0].parameters = new DOtherSideJNI.ParameterDefinition[0];
-
-        slots[1] = new DOtherSideJNI.SlotDefinition();
-        slots[1].name = "setName";
-        slots[1].returnMetaType = DOtherSideJNI.MetaType.Void.value();
-        
-        slots[1].parameters = new DOtherSideJNI.ParameterDefinition[1];
-        slots[1].parameters[0] = new DOtherSideJNI.ParameterDefinition();
-        slots[1].parameters[0].name = "value";
-        slots[1].parameters[0].metaType = DOtherSideJNI.MetaType.String.value();
-
-        DOtherSideJNI.PropertyDefinition[] properties = new DOtherSideJNI.PropertyDefinition[1];
-        properties[0] = new DOtherSideJNI.PropertyDefinition();
-        properties[0].name = "name";
-        properties[0].metaType = DOtherSideJNI.MetaType.String.value();
-        properties[0].readSlot = "name";
-        properties[0].writeSlot = "setName";
-        properties[0].notifySignal = "nameChanged";
-
-        QMetaObject staticMetaObject = null; //new QMetaObject(QObject.staticMetaObject, "User", signals, slots, properties);
-        
-        return staticMetaObject;
-    }
-
-    
     /**
      * Creates a @link{DOtherSideJNI.SignalDefinition} according to the naming convention {@code propertyName + "Changed"}
      * @return
@@ -72,7 +42,7 @@ public class QmlMetaObjectBuilder {
      * @param javaParameter
      * @return
      */
-    DOtherSideJNI.ParameterDefinition createParameter(Parameter javaParameter) {
+    DOtherSideJNI.ParameterDefinition createParameterDefinition(Parameter javaParameter) {
         String javaParameterName = javaParameter.getName();
         Class<?> javaParameterType = javaParameter.getType();
         Util.assertValidString(javaParameterName);
@@ -107,7 +77,7 @@ public class QmlMetaObjectBuilder {
         DOtherSideJNI.SlotDefinition getter = new DOtherSideJNI.SlotDefinition();
 
         getter.name = fixGetterNameHack(methodName);
-        getter.parameters = Arrays.stream(method.getParameters()).map(this::createParameter)
+        getter.parameters = Arrays.stream(method.getParameters()).map(this::createParameterDefinition)
                 .toArray(DOtherSideJNI.ParameterDefinition[]::new);
         getter.returnMetaType = Util.toMetaType(method.getReturnType()).value();
         return getter;
@@ -148,7 +118,7 @@ public class QmlMetaObjectBuilder {
      * Creates the array of {@link DOtherSideJNI.PropertyDefinition}s for the class passed in the constructor 
      * @return
      */
-    DOtherSideJNI.PropertyDefinition[] createQPropertyDefinitions() {
+    DOtherSideJNI.PropertyDefinition[] createPropertyDefinitions() {
         DOtherSideJNI.PropertyDefinition[] jniProperties = 
                 propertyDescriptors.stream().map(this::createPropertyDefinition)
                 .toArray(DOtherSideJNI.PropertyDefinition[]::new);
@@ -165,7 +135,7 @@ public class QmlMetaObjectBuilder {
      * Creates the array of {@link DOtherSideJNI.SlotDefinition}s for the class passed in the constructor 
      * @return
      */
-    DOtherSideJNI.SlotDefinition[] createQSlotDefinitions() {
+    DOtherSideJNI.SlotDefinition[] createSlotDefinitions() {
         DOtherSideJNI.SlotDefinition[] jniSlots = propertyDescriptors.stream().flatMap(this::getReadAndWriteMethods)
                 .map(meth -> createSlot(meth)).toArray(DOtherSideJNI.SlotDefinition[]::new);
         
@@ -196,14 +166,8 @@ public class QmlMetaObjectBuilder {
      * @return
      */
     public QMetaObject build() {
-        QMetaObject qmo = new QMetaObject(QObject.staticMetaObject, this.qClass.getSimpleName(), createSignalDefinitions(), createQSlotDefinitions(), createQPropertyDefinitions());
+        QMetaObject qmo = new QMetaObject(QObject.staticMetaObject, this.qClass.getSimpleName(), createSignalDefinitions(), createSlotDefinitions(), createPropertyDefinitions());
         return qmo;
     }
     
-//    public static void main(String[] args) throws IntrospectionException {
-//        System.loadLibrary("DOtherSideJNI");
-//
-//        QmlMetaObjectBuilder builder = new QmlMetaObjectBuilder(PingPong.class);
-//        builder.build();
-//    }
 }
