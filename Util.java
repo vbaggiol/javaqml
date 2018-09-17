@@ -1,7 +1,3 @@
-/**
- * Copyright (c) 2018 European Organisation for Nuclear Research (CERN), All Rights Reserved.
- */
-
 public class Util {
     public static void assertValidString(String str) {
         if (!isValidString(str)) {
