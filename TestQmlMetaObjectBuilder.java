@@ -1,7 +1,3 @@
-/**
- * Copyright (c) 2018 European Organisation for Nuclear Research (CERN), All Rights Reserved.
- */
-
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
