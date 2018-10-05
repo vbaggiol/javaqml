@@ -154,7 +154,7 @@ jlong JNICALL Java_DOtherSideJNI_qvariant_1create_1double(JNIEnv *env, jclass t,
     return (jlong)dos_qvariant_create_double(value);
 }
 
-jlong Java_DOtherSideJNI_qvariant_1create_1qobject(JNIEnv *env, jclass t, jlong value)
+jlong JNICALL Java_DOtherSideJNI_qvariant_1create_1qobject(JNIEnv *env, jclass t, jlong value)
 {
     return (jlong) dos_qvariant_create_qobject((DosQObject*) value);
 }
