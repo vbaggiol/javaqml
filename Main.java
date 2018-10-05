@@ -41,8 +41,12 @@ public class Main {
         }
 
         public void setName(String name) {
+            if (this.name.equals(name))
+                return;
             System.out.println("Setting " + name);
             this.name = name;
+            QVariant[] args = { new QVariant(name) };
+            emit("nameChanged", args);
         }
 
         public QVariant onSlotCalled(QVariant name, QVariant[] arguments) {

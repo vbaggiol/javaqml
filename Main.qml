@@ -16,10 +16,7 @@ Window {
         }
 
         TextField {
-            onEditingFinished: {
-                user.name = text
-                displayLabel.text = user.name
-            }
+            onEditingFinished: user.name = text
         }
     }
 

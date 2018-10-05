@@ -56,7 +56,7 @@ public class QObject {
 
     public static final QMetaObject staticMetaObject;
 
-    private void emit(String name, QVariant[] arguments) {
+    public void emit(String name, QVariant[] arguments) {
         long[] cArguments = new long[arguments.length];
         for (int i = 0; i < cArguments.length; ++i) {
             cArguments[i] = arguments[i].voidPointer();
