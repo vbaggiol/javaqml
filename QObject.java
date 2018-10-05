@@ -61,7 +61,7 @@ public class QObject {
         for (int i = 0; i < cArguments.length; ++i) {
             cArguments[i] = arguments[i].voidPointer();
         }
-        DOtherSide.qobject_signal_emit(voidPointer(), name, cArguments);
+        DOtherSideJNI.qobject_signal_emit(voidPointer(), name, cArguments);
     }
 
     private static AtomicLong nextInstanceId;
