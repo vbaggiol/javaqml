@@ -80,6 +80,7 @@ class DOtherSideJNI {
     public static native long qobject_qmetaobject();
     public static native void qobject_delete(long self);
     public static native void qobject_deleteLater(long self);
+    public static native void qobject_signal_emit(long self, String signalName, long[] signalArguments);
 
     public static native long qabstractlistmodel_qmetaobject();
     public static native long qabstracttablemodel_qmetaobject();

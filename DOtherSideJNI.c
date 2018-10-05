@@ -23,9 +23,6 @@ static void c_on_slot_called(void* self, void* slot_name, int parameters_count, 
     free(temp);
 
     (*env)->CallStaticVoidMethod(env, callback_class, callback_method, (jlong) self, (jlong) slot_name, array);
-
-    printf("Ciaooooooooooo %s\n", dos_qvariant_toString(parameters[0]));
-
 }
 
 void JNICALL Java_DOtherSideJNI_initialize(JNIEnv *env , jclass t)
@@ -432,4 +429,22 @@ void JNICALL Java_DOtherSideJNI_qobject_1deleteLater(JNIEnv *env, jclass t, jlon
 void JNICALL Java_DOtherSideJNI_qvariant_1assign(JNIEnv *env, jclass t, jlong lhs, jlong rhs)
 {
     dos_qvariant_assign((DosQVariant*)lhs, (DosQVariant*)rhs);
+}
+
+void JNICALL Java_DOtherSideJNI_qobject_1signal_1emit(JNIEnv *env, jclass t, jlong self, jstring name, jlongArray arguments)
+{
+    size_t arguments_size = (size_t) (*env)->GetArrayLength(env, arguments);
+
+    jlong* elements = (*env)->GetLongArrayElements(env, arguments, NULL);
+    void** c_arguments = (void**)malloc(sizeof(void*) * arguments_size);
+    for (int i = 0; i < arguments_size; ++i) {
+        c_arguments[i] = (void*) elements[i];
+    }
+
+    const char *c_name = (*env)->GetStringUTFChars(env, name, 0);
+    dos_qobject_signal_emit((DosQObject*) self, c_name, arguments_size, c_arguments);
+    (*env)->ReleaseStringUTFChars(env, name, c_name);
+
+    free(c_arguments);
+    (*env)->ReleaseLongArrayElements(env, arguments, elements, 0);
 }
