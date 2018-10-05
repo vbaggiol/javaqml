@@ -57,11 +57,11 @@ public class QObject {
     public static final QMetaObject staticMetaObject;
 
     private void emit(String name, QVariant[] arguments) {
-        long[] c_arguments = new long[arguments.length];
-        for (int i = 0; i < c_arguments.length; ++i) {
-            c_arguments[i] = arguments[i].voidPointer();
+        long[] cArguments = new long[arguments.length];
+        for (int i = 0; i < cArguments.length; ++i) {
+            cArguments[i] = arguments[i].voidPointer();
         }
-        DOtherSide.qobject_signal_emit(voidPointer(), name, c_arguments);
+        DOtherSide.qobject_signal_emit(voidPointer(), name, cArguments);
     }
 
     private static AtomicLong nextInstanceId;
