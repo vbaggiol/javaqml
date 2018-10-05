@@ -56,6 +56,14 @@ public class QObject {
 
     public static final QMetaObject staticMetaObject;
 
+    private void emit(String name, QVariant[] arguments) {
+        long[] c_arguments = new long[arguments.length];
+        for (int i = 0; i < c_arguments.length; ++i) {
+            c_arguments[i] = arguments[i].voidPointer();
+        }
+        DOtherSide.qobject_signal_emit(voidPointer(), name, c_arguments);
+    }
+
     private static AtomicLong nextInstanceId;
     private static ConcurrentHashMap<Long, WeakReference<QObject>> objectsMap;
     private long self;
