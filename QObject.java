@@ -4,14 +4,14 @@ import java.lang.ref.WeakReference;
 
 public class QObject {
     static {
-        objectsMap = new ConcurrentHashMap<Long, WeakReference>();
+        objectsMap = new ConcurrentHashMap<Long, WeakReference<QObject>>();
         nextInstanceId = new AtomicLong(1);
         staticMetaObject = new QMetaObject(DOtherSideJNI.qobject_qmetaobject());
     }
 
     public QObject() {
         instanceId = nextInstanceId.getAndIncrement();
-        objectsMap.put(new Long(instanceId), new WeakReference(this));
+        objectsMap.put(new Long(instanceId), new WeakReference<QObject>(this));
         self = DOtherSideJNI.qobject_create(instanceId, metaObject().voidPointer());
     }
 
@@ -57,7 +57,7 @@ public class QObject {
     public static final QMetaObject staticMetaObject;
 
     private static AtomicLong nextInstanceId;
-    private static ConcurrentHashMap<Long, WeakReference> objectsMap;
+    private static ConcurrentHashMap<Long, WeakReference<QObject>> objectsMap;
     private long self;
     private final long instanceId;
 }
