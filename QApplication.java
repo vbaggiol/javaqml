@@ -11,8 +11,12 @@ public class QApplication {
         DOtherSideJNI.qapplication_exec();
     }
 
+    public void delete() {
+        DOtherSideJNI.qapplication_delete();
+    }
+
     @Override
     public void finalize() {
-        DOtherSideJNI.qapplication_delete();
+        delete();
     }
 }

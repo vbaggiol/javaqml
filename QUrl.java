@@ -19,5 +19,10 @@ public class QUrl {
 	return self;
     }
 
+    @Override
+    public void finalize() {
+        delete();
+    }
+
     private long self;
 }

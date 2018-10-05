@@ -27,6 +27,15 @@ public class QObject {
         return self;
     }
 
+    public void deleteLater() {
+        DOtherSideJNI.qobject_deleteLater(self);
+    }
+
+    @Override
+    public void finalize() {
+        deleteLater();
+    }
+
     protected QVariant onSlotCalled(QVariant slotName, QVariant[] arguments) {
         return null;
     }
