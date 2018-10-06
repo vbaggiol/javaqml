@@ -10,13 +10,30 @@ Window {
 
     ColumnLayout {
         anchors.centerIn: parent
-        Label {
-            id: displayLabel
-            text: user.name
+        RowLayout {
+            Layout.fillWidth: true
+            Label { text: "User name"; }
+            Label { text: user.name }
         }
 
-        TextField {
-            onEditingFinished: user.name = text
+        RowLayout {
+            Layout.fillWidth: true
+            Label { text: "Edit user name" }
+            TextField { onEditingFinished: user.name = text }
+        }
+
+        RowLayout {
+            Layout.fillWidth: true
+            Label { text: "Signal value" }
+            TextField {
+                id: signalValueTextField
+                readOnly: true
+            }
+        }
+
+        Connections {
+            target: user
+            onNameChanged: signalValueTextField.text = name
         }
     }
 
