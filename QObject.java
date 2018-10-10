@@ -44,8 +44,9 @@ public class QObject {
         QObject object = objectsMap.get(self).get();
         if (object != null) {
             QVariant[] arguments = new QVariant[Math.max(0, cArguments.length - 1)];
-            for (int i = 1; i < cArguments.length; ++i)
+            for (int i = 1; i < cArguments.length; ++i) {
                 arguments[i - 1] = QVariant.fromVoidPointer(cArguments[i], false);
+            }
             QVariant name = QVariant.fromVoidPointer(cName, false);
             QVariant result = object.onSlotCalled(name, arguments);
             if (result != null) {

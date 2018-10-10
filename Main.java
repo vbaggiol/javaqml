@@ -44,8 +44,9 @@ public class Main {
         }
 
         public void setName(String name) {
-            if (this.name.equals(name))
+            if (this.name.equals(name)) {
                 return;
+            }
             System.out.println("Setting " + name);
             this.name = name;
             nameChanged(name);
@@ -58,12 +59,13 @@ public class Main {
         @Override
         public QVariant onSlotCalled(QVariant name, QVariant... arguments) {
             QVariant result = null;
-            if (name.toString().equals("name"))
+            if (name.toString().equals("name")) {
                 result = new QVariant(getName());
-            else if (name.toString().equals("setName"))
+            } else if (name.toString().equals("setName")) {
                 setName(arguments[0].toString());
-            else
+            } else {
                 result = super.onSlotCalled(name, arguments);
+            }
             return result;
         }
 
