@@ -11,6 +11,7 @@ public class QUrl {
 	DOtherSideJNI.qurl_delete(self);
     }
 
+    @Override
     public String toString() {
 	return DOtherSideJNI.qurl_toString(self);
     }

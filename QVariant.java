@@ -78,6 +78,7 @@ public class QVariant {
         return DOtherSideJNI.qvariant_toDouble(self);
     }
 
+    @Override
     public String toString() {
         return DOtherSideJNI.qvariant_toString(self);
     }
