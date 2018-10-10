@@ -7,7 +7,10 @@ public class Main {
 //            DOtherSideJNI.SignalDefinition[] signals = new DOtherSideJNI.SignalDefinition[1];
 //            signals[0] = new DOtherSideJNI.SignalDefinition();
 //            signals[0].name = "nameChanged";
-//            signals[0].parameters = new DOtherSideJNI.ParameterDefinition[0];
+//            signals[0].parameters = new DOtherSideJNI.ParameterDefinition[1];
+//            signals[0].parameters[0] = new DOtherSideJNI.ParameterDefinition();
+//            signals[0].parameters[0].name = "name";
+//            signals[0].parameters[0].metaType = DOtherSideJNI.MetaType.String.value();
 //
 //            DOtherSideJNI.SlotDefinition[] slots = new DOtherSideJNI.SlotDefinition[2];
 //            slots[0] = new DOtherSideJNI.SlotDefinition();
@@ -48,8 +51,15 @@ public class Main {
         }
 
         public void setName(String name) {
+            if (this.name.equals(name))
+                return;
             System.out.println("Setting " + name);
             this.name = name;
+            nameChanged(name);
+        }
+
+        public void nameChanged(String name) {
+            emit("nameChanged", new QVariant[] { new QVariant(name)});
         }
 
         public QVariant onSlotCalled(QVariant name, QVariant[] arguments) {

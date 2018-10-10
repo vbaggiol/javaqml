@@ -361,6 +361,14 @@ JNIEXPORT void JNICALL Java_DOtherSideJNI_qobject_1deleteLater
 
 /*
  * Class:     DOtherSideJNI
+ * Method:    qobject_signal_emit
+ * Signature: (JLjava/lang/String;[J)V
+ */
+JNIEXPORT void JNICALL Java_DOtherSideJNI_qobject_1signal_1emit
+  (JNIEnv *, jclass, jlong, jstring, jlongArray);
+
+/*
+ * Class:     DOtherSideJNI
  * Method:    qabstractlistmodel_qmetaobject
  * Signature: ()J
  */

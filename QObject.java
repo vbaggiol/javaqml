@@ -4,14 +4,14 @@ import java.lang.ref.WeakReference;
 
 public class QObject {
     static {
-        objectsMap = new ConcurrentHashMap<Long, WeakReference>();
+        objectsMap = new ConcurrentHashMap<Long, WeakReference<QObject>>();
         nextInstanceId = new AtomicLong(1);
         staticMetaObject = new QMetaObject(DOtherSideJNI.qobject_qmetaobject());
     }
 
     public QObject() {
         instanceId = nextInstanceId.getAndIncrement();
-        objectsMap.put(new Long(instanceId), new WeakReference(this));
+        objectsMap.put(new Long(instanceId), new WeakReference<QObject>(this));
         self = DOtherSideJNI.qobject_create(instanceId, metaObject().voidPointer());
     }
 
@@ -25,6 +25,15 @@ public class QObject {
 
     public long voidPointer() {
         return self;
+    }
+
+    public void deleteLater() {
+        DOtherSideJNI.qobject_deleteLater(self);
+    }
+
+    @Override
+    public void finalize() {
+        deleteLater();
     }
 
     protected QVariant onSlotCalled(QVariant slotName, QVariant[] arguments) {
@@ -47,8 +56,16 @@ public class QObject {
 
     public static final QMetaObject staticMetaObject;
 
+    public void emit(String name, QVariant[] arguments) {
+        long[] cArguments = new long[arguments.length];
+        for (int i = 0; i < cArguments.length; ++i) {
+            cArguments[i] = arguments[i].voidPointer();
+        }
+        DOtherSideJNI.qobject_signal_emit(voidPointer(), name, cArguments);
+    }
+
     private static AtomicLong nextInstanceId;
-    private static ConcurrentHashMap<Long, WeakReference> objectsMap;
+    private static ConcurrentHashMap<Long, WeakReference<QObject>> objectsMap;
     private long self;
     private final long instanceId;
 }
