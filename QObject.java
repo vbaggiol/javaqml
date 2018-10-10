@@ -36,12 +36,12 @@ public class QObject {
         deleteLater();
     }
 
-    protected QVariant onSlotCalled(QVariant slotName, QVariant[] arguments) {
+    protected QVariant onSlotCalled(QVariant slotName, QVariant... arguments) {
         return null;
     }
 
-    public static void onSlotCalledCallback(long self, long cName, long[] cArguments) {
-        QObject object = (QObject) objectsMap.get(self).get();
+    public static void onSlotCalledCallback(long self, long cName, long... cArguments) {
+        QObject object = objectsMap.get(self).get();
         if (object != null) {
             QVariant[] arguments = new QVariant[Math.max(0, cArguments.length - 1)];
             for (int i = 1; i < cArguments.length; ++i)
@@ -56,7 +56,7 @@ public class QObject {
 
     public static final QMetaObject staticMetaObject;
 
-    public void emit(String name, QVariant[] arguments) {
+    public void emit(String name, QVariant... arguments) {
         long[] cArguments = new long[arguments.length];
         for (int i = 0; i < cArguments.length; ++i) {
             cArguments[i] = arguments[i].voidPointer();

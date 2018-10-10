@@ -52,10 +52,11 @@ public class Main {
         }
 
         public void nameChanged(String name) {
-            emit("nameChanged", new QVariant[] { new QVariant(name)});
+            emit("nameChanged", new QVariant(name));
         }
 
-        public QVariant onSlotCalled(QVariant name, QVariant[] arguments) {
+        @Override
+        public QVariant onSlotCalled(QVariant name, QVariant... arguments) {
             QVariant result = null;
             if (name.toString().equals("name"))
                 result = new QVariant(getName());
@@ -66,6 +67,7 @@ public class Main {
             return result;
         }
 
+        @Override
         public QMetaObject metaObject() {
             return staticMetaObject;
         }
